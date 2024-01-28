@@ -1,16 +1,17 @@
-import 'package:chat_app/screens/signup_screen.dart';
-import 'package:chat_app/widgets/custom_button.dart';
-import 'package:chat_app/widgets/custom_field.dart';
+import 'package:chat_app/screens/signin_screen.dart';
 import 'package:flutter/material.dart';
 
-class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+import '../widgets/custom_button.dart';
+import '../widgets/custom_field.dart';
+
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +24,7 @@ class _SignInScreenState extends State<SignInScreen> {
             const SizedBox(height: 30),
             const Center(
               child: Text(
-                'Sign In',
+                'Sign Up',
                 style: TextStyle(
                   fontSize: 40,
                   color: Colors.black,
@@ -36,7 +37,7 @@ class _SignInScreenState extends State<SignInScreen> {
             const SizedBox(height: 12),
             const Center(
               child: Text(
-                'Enter your login details',
+                'Enter details to create account',
                 style: TextStyle(
                   fontSize: 20,
                   color: Colors.black,
@@ -46,7 +47,15 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
 
             /// email address
-            const SizedBox(height: 30),
+            const SizedBox(height: 60),
+            CustomTextField(
+              heading: 'Name',
+              controller: TextEditingController(),
+              hintText: 'Enter your name',
+            ),
+
+            /// email
+            const SizedBox(height: 16),
             CustomTextField(
               heading: 'Email',
               controller: TextEditingController(),
@@ -62,27 +71,20 @@ class _SignInScreenState extends State<SignInScreen> {
               isObscure: true,
             ),
 
-            /// forgot password
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'Forgot Password?',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
+            /// password
+            const SizedBox(height: 16),
+            CustomTextField(
+              heading: 'Confirm Password',
+              controller: TextEditingController(),
+              hintText: 'Enter your password again',
+              isObscure: true,
             ),
-            const SizedBox(height: 24),
 
             /// button
+            const SizedBox(height: 40),
             CustomButton(
               onTap: () {},
-              buttonText: 'Sign In',
+              buttonText: 'Sign Up',
             ),
             const SizedBox(height: 10),
 
@@ -91,7 +93,7 @@ class _SignInScreenState extends State<SignInScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  'Don\'t have an account?',
+                  'Already have an account?',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.black,
@@ -102,12 +104,12 @@ class _SignInScreenState extends State<SignInScreen> {
                     Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const SignUpScreen(),
+                          builder: (context) => const SignInScreen(),
                         ),
                         (route) => false);
                   },
                   child: const Text(
-                    'SignUp',
+                    'LogIn',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.green,
