@@ -37,8 +37,8 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         textTheme: GoogleFonts.workSansTextTheme(),
       ),
-      home: const HomePage(),
-      //home: const SplashScreen(),
+      //home: const HomePage(),
+      home: const SplashScreen(),
     );
   }
 }
