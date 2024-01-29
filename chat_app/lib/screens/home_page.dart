@@ -10,6 +10,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool search = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,15 +39,23 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Icon(
-                    Icons.search,
-                    color: Colors.black,
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      search = true;
+                    });
+                    print(search);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Icon(
+                      Icons.search,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ],
