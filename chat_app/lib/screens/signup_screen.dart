@@ -20,7 +20,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool isLoading = false;
   String name = '', email = '', password = '', confirmPassword = '';
 
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
