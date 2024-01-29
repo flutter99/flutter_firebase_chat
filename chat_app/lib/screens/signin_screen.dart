@@ -1,3 +1,4 @@
+import 'package:chat_app/screens/forgot_password_page.dart';
 import 'package:chat_app/screens/home_page.dart';
 import 'package:chat_app/screens/signup_screen.dart';
 import 'package:chat_app/services/database.dart';
@@ -163,7 +164,14 @@ class _SignInScreenState extends State<SignInScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ForgotPassword(),
+                      ),
+                    );
+                  },
                   child: const Text(
                     'Forgot Password?',
                     style: TextStyle(
