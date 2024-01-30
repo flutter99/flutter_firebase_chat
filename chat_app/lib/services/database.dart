@@ -1,3 +1,4 @@
+import 'package:chat_app/services/local_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -64,6 +65,22 @@ class DatabaseMethod {
         .doc(chatRoomId)
         .collection('chats')
         .orderBy('time', descending: true)
+        .snapshots();
+  }
+
+  Future<QuerySnapshot> getUserInfo(String username) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: username)
+        .get();
+  }
+
+  Future<Stream<QuerySnapshot>> getChatRooms() async {
+    String? myUserName = await LocalDatabase().getUserName();
+    return FirebaseFirestore.instance
+        .collection('chatRooms')
+        .orderBy('time', descending: true)
+        .where('users', arrayContains: myUserName!)
         .snapshots();
   }
 }

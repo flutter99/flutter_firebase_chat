@@ -18,6 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool search = false;
   String? myName, myUserName, myEmail, myProfilePic;
+  Stream? chatRoomStream;
   List<dynamic> queryResultSet = [];
   List<dynamic> tempSearchStore = [];
 
@@ -31,6 +32,7 @@ class _HomePageState extends State<HomePage> {
 
   onTheLoad() async {
     await getTheSharedPrefs();
+    chatRoomStream = await DatabaseMethod().getChatRooms();
     setState(() {});
   }
 
@@ -42,6 +44,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  ///
   initiateSearch(value) {
     if (value.length == 0) {
       setState(() {
@@ -77,6 +80,33 @@ class _HomePageState extends State<HomePage> {
         },
       );
     }
+  }
+
+  ///
+  Widget chatRoomList() {
+    return StreamBuilder(
+      stream: chatRoomStream,
+      builder: (context, AsyncSnapshot snapshot) {
+        return snapshot.hasData
+            ? ListView.builder(
+                itemCount: snapshot.data.docs.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  DocumentSnapshot documentSnapshot = snapshot.data.docs[index];
+                  print(documentSnapshot);
+                  return ChatRoomListTile(
+                    lastMessage: documentSnapshot['lastMessage'],
+                    chatRoomId: documentSnapshot.id,
+                    myUserName: myUserName!,
+                    time: documentSnapshot['lastMessageSendTs'],
+                  );
+                },
+              )
+            : const Center(
+                child: CircularProgressIndicator(),
+              );
+      },
+    );
   }
 
   @override
@@ -217,217 +247,7 @@ class _HomePageState extends State<HomePage> {
                         return buildResultCard(element);
                       }).toList(),
                     )
-                  : Column(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => ChatPage(
-                            //       name: myName!,
-                            //       profilePic: myProfilePic!,
-                            //       userName: myUserName!,
-                            //     ),
-                            //   ),
-                            // );
-                          },
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(60),
-                                child: Image.asset(
-                                  "assets/user.jpg",
-                                  height: 60,
-                                  width: 60,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const SizedBox(width: 10.0),
-                              const Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(height: 10.0),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "Bilal Ahmad",
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 17.0,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    "Hello, What are you doing?",
-                                    style: TextStyle(
-                                      color: Colors.black45,
-                                      fontSize: 15.0,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const Spacer(),
-                              const Text(
-                                "04:30 PM",
-                                style: TextStyle(
-                                  color: Colors.black45,
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 30.0),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(60),
-                              child: Image.asset(
-                                "assets/user.jpg",
-                                height: 60,
-                                width: 60,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            const SizedBox(width: 10.0),
-                            const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(height: 10.0),
-                                Text(
-                                  "Ahmad Raza",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 17.0,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                Text(
-                                  "Hy, What is going on?",
-                                  style: TextStyle(
-                                    color: Colors.black45,
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Spacer(),
-                            const Text(
-                              "05:30 PM",
-                              style: TextStyle(
-                                color: Colors.black45,
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 30.0),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(60),
-                              child: Image.asset(
-                                "assets/user.jpg",
-                                height: 60,
-                                width: 60,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            const SizedBox(width: 10.0),
-                            const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(height: 10.0),
-                                Text(
-                                  "Hasan Ali",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 17.0,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                Text(
-                                  "Hello, How was your day?",
-                                  style: TextStyle(
-                                    color: Colors.black45,
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Spacer(),
-                            const Text(
-                              "10:30 AM",
-                              style: TextStyle(
-                                color: Colors.black45,
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 30.0),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(60),
-                              child: Image.asset(
-                                "assets/user.jpg",
-                                height: 60,
-                                width: 60,
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                            const SizedBox(width: 10.0),
-                            const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(height: 10.0),
-                                Text(
-                                  "Ahmad Ali",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 17.0,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                Text(
-                                  "Hello, Shivam!",
-                                  style: TextStyle(
-                                    color: Colors.black45,
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Spacer(),
-                            const Text(
-                              "12:30 AM",
-                              style: TextStyle(
-                                color: Colors.black45,
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                  : chatRoomList(),
             ),
           )
         ],
@@ -438,7 +258,6 @@ class _HomePageState extends State<HomePage> {
   Widget buildResultCard(data) {
     return GestureDetector(
       onTap: () async {
-
         var chatRoomId = getChatRoomIDByUserName(
           myUserName!,
           data['username'],
@@ -514,6 +333,114 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ChatRoomListTile extends StatefulWidget {
+  final String lastMessage, chatRoomId, myUserName, time;
+
+  const ChatRoomListTile({
+    super.key,
+    required this.lastMessage,
+    required this.chatRoomId,
+    required this.myUserName,
+    required this.time,
+  });
+
+  @override
+  State<ChatRoomListTile> createState() => _ChatRoomListTileState();
+}
+
+class _ChatRoomListTileState extends State<ChatRoomListTile> {
+  String profilePic = '', name = '', username = '', id = '';
+
+  getThisUserInfo() async {
+    username =
+        widget.chatRoomId.replaceAll("_", "").replaceAll(widget.myUserName, "");
+
+    try {
+      QuerySnapshot querySnapshot =
+          await DatabaseMethod().getUserInfo(username);
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var userInfo = querySnapshot.docs[0].data();
+        name = '${querySnapshot.docs[0]["name"]}';
+        profilePic = '${querySnapshot.docs[0]["photo"]}';
+        id = '${querySnapshot.docs[0]["id"]}';
+      } else {
+        print("No user found with username $username");
+      }
+    } catch (e) {
+      print("An error occurred: $e");
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getThisUserInfo();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {},
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          profilePic == ''
+              ? const CircularProgressIndicator()
+              : ClipRRect(
+                  borderRadius: BorderRadius.circular(60),
+                  child: Image.network(
+                    profilePic,
+                    height: 60,
+                    width: 60,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+          const SizedBox(width: 10.0),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    username,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 17.0,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                widget.lastMessage,
+                style: const TextStyle(
+                  color: Colors.black45,
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Text(
+            widget.time,
+            style: const TextStyle(
+              color: Colors.black45,
+              fontSize: 14.0,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }

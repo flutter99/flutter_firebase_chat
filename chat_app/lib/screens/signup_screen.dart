@@ -65,7 +65,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         await LocalDatabase().saveUserEmail(emailController.text);
         await LocalDatabase().saveUserDisplayName(nameController.text);
         await LocalDatabase().saveUserName(
-          emailController.text.replaceAll('@gmail.com', ""),
+          emailController.text.replaceAll('@gmail.com', "").toUpperCase(),
         );
         await LocalDatabase().saveUserPic(
             'https://firebasestorage.googleapis.com/v0/b/chat-app-fb631.appspot.com/o/user%20(2).jpg?alt=media&token=ad276cb6-147f-4976-95df-200de18d7e6f');
