@@ -1,8 +1,10 @@
 import 'package:chat_app/screens/signin_screen.dart';
 import 'package:chat_app/services/database.dart';
+import 'package:chat_app/services/local_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'chat_page.dart';
 
@@ -15,8 +17,30 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool search = false;
+  String? myName, myUserName, myEmail, myProfilePic;
   List<dynamic> queryResultSet = [];
   List<dynamic> tempSearchStore = [];
+
+  getTheSharedPrefs() async {
+    myName = await LocalDatabase().getUserDisplayName();
+    myUserName = await LocalDatabase().getUserName();
+    myEmail = await LocalDatabase().getUserEmail();
+    myProfilePic = await LocalDatabase().getUserPic();
+    setState(() {});
+  }
+
+  onTheLoad() async {
+    await getTheSharedPrefs();
+    setState(() {});
+  }
+
+  getChatRoomIDByUserName(String a, String b) {
+    if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
+      return "$b\_$a";
+    } else {
+      return "$b\_$a";
+    }
+  }
 
   initiateSearch(value) {
     if (value.length == 0) {
@@ -53,6 +77,13 @@ class _HomePageState extends State<HomePage> {
         },
       );
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    onTheLoad();
   }
 
   @override
@@ -190,12 +221,16 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ChatPage(),
-                              ),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => ChatPage(
+                            //       name: myName!,
+                            //       profilePic: myProfilePic!,
+                            //       userName: myUserName!,
+                            //     ),
+                            //   ),
+                            // );
                           },
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -401,53 +436,82 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget buildResultCard(data) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Material(
-        elevation: 5.0,
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
+    return GestureDetector(
+      onTap: () async {
+
+        var chatRoomId = getChatRoomIDByUserName(
+          myUserName!,
+          data['username'],
+        );
+
+        Map<String, dynamic> chatRoomInfoMap = {
+          'users': [myUserName, data['username']],
+        };
+
+        await DatabaseMethod().createChatRoom(chatRoomId, chatRoomInfoMap);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(
+              name: data['name'],
+              profilePic: data['photo'],
+              userName: data['username'],
+            ),
           ),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child: Image.network(
-                  data['photo'],
-                  height: 70,
-                  width: 70,
-                  fit: BoxFit.fill,
+        );
+
+        search = false;
+        setState(() {});
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Material(
+          elevation: 5.0,
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: Image.network(
+                    data['photo'],
+                    height: 70,
+                    width: 70,
+                    fit: BoxFit.fill,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    data['name'],
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      data['name'],
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10.0),
-                  Text(
-                    data['username'],
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
+                    const SizedBox(height: 10.0),
+                    Text(
+                      data['username'],
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

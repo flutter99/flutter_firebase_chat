@@ -35,6 +35,9 @@ dependencies:
   # LOCAL DATABASE
   shared_preferences: ^2.2.2
 
+  # INTL
+  intl: ^0.19.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
