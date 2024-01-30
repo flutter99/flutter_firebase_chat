@@ -66,7 +66,6 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.green,
         onPressed: () async {
           await FirebaseAuth.instance.signOut().then((value) {
-
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 backgroundColor: Colors.green,
@@ -138,10 +137,17 @@ class _HomePageState extends State<HomePage> {
                       ),
                 GestureDetector(
                   onTap: () {
-                    setState(() {
-                      search = true;
-                    });
-                    print(search);
+                    if (search == false) {
+                      setState(() {
+                        search = true;
+                      });
+                      print(search);
+                    } else {
+                      setState(() {
+                        search = false;
+                      });
+                      print(search);
+                    }
                   },
                   child: Container(
                     padding: const EdgeInsets.all(6),
@@ -149,8 +155,8 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Icon(
-                      Icons.search,
+                    child: Icon(
+                      search == true ? Icons.close : Icons.search,
                       color: Colors.black,
                     ),
                   ),
@@ -408,6 +414,16 @@ class _HomePageState extends State<HomePage> {
           ),
           child: Row(
             children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: Image.network(
+                  data['photo'],
+                  height: 70,
+                  width: 70,
+                  fit: BoxFit.fill,
+                ),
+              ),
+              const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
