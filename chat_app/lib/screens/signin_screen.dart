@@ -50,6 +50,9 @@ class _SignInScreenState extends State<SignInScreen> {
       await LocalDatabase().saveUserEmail(email);
       await LocalDatabase().saveUserID(id);
 
+      setState(() {
+        isLoading = false;
+      });
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(

@@ -43,12 +43,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
         );
 
         String id = Uuid().v1();
+        String user = emailController.text.replaceAll('@gmail.com', "");
+        String updatedUserName = user.replaceFirst(user[0], user[0].toUpperCase());
+        String firstLetter = user.substring(0,1).toUpperCase();
 
         Map<String, dynamic> userInfoMap = {
           'id': id,
           'name': nameController.text,
           'email': emailController.text,
-          'username': emailController.text.replaceAll('@gmail.com', ''),
+          'username': updatedUserName.toUpperCase(),
+          'searchKey': firstLetter,
           'photo':
               'https://firebasestorage.googleapis.com/v0/b/chat-app-fb631.appspot.com/o/user%20(2).jpg?alt=media&token=ad276cb6-147f-4976-95df-200de18d7e6f',
         };
