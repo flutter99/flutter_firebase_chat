@@ -1,3 +1,6 @@
+import 'package:chat_app/screens/home_page.dart';
+import 'package:chat_app/screens/signup_screen.dart';
+import 'package:chat_app/services/auth.dart';
 import 'package:flutter/material.dart';
 
 import 'signin_screen.dart';
@@ -70,7 +73,16 @@ class _SplashScreenState extends State<SplashScreen>
       () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const SignInScreen(),
+          builder: (context) => FutureBuilder(
+            future: AuthMethods().getCurrentUser(),
+            builder: (context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.hasData) {
+                return const HomePage();
+              } else {
+                return const SignUpScreen();
+              }
+            },
+          ),
         ),
       ),
     );

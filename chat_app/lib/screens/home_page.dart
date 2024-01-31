@@ -4,7 +4,6 @@ import 'package:chat_app/services/local_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'chat_page.dart';
 
@@ -16,12 +15,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  /// variables
   bool search = false;
   String? myName, myUserName, myEmail, myProfilePic;
   Stream? chatRoomStream;
   List<dynamic> queryResultSet = [];
   List<dynamic> tempSearchStore = [];
 
+
+  /// get the share prefs method
   getTheSharedPrefs() async {
     myName = await LocalDatabase().getUserDisplayName();
     myUserName = await LocalDatabase().getUserName();
@@ -30,12 +33,14 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
+  /// on the load method
   onTheLoad() async {
     await getTheSharedPrefs();
     chatRoomStream = await DatabaseMethod().getChatRooms();
     setState(() {});
   }
 
+  /// get chat room id by username method
   getChatRoomIDByUserName(String a, String b) {
     if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
       return "$b\_$a";
@@ -44,7 +49,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  ///
+  /// initiateSearch method
   initiateSearch(value) {
     if (value.length == 0) {
       setState(() {
@@ -82,19 +87,33 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  ///
+  /// chat room list method
   Widget chatRoomList() {
     return StreamBuilder(
       stream: chatRoomStream,
       builder: (context, AsyncSnapshot snapshot) {
         return snapshot.hasData
             ? ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 24),
                 itemCount: snapshot.data.docs.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   DocumentSnapshot documentSnapshot = snapshot.data.docs[index];
                   print(documentSnapshot);
                   return ChatRoomListTile(
+                    onTap: (){
+
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => ChatPage(
+                      //       name: data['name'],
+                      //       profilePic: data['photo'],
+                      //       userName: data['username'],
+                      //     ),
+                      //   ),
+                      // );
+                    },
                     lastMessage: documentSnapshot['lastMessage'],
                     chatRoomId: documentSnapshot.id,
                     myUserName: myUserName!,
@@ -109,6 +128,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  /// INIT STATE
   @override
   void initState() {
     // TODO: implement initState
@@ -116,6 +136,7 @@ class _HomePageState extends State<HomePage> {
     onTheLoad();
   }
 
+  /// MAIN BUILD WIDGET
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -229,8 +250,6 @@ class _HomePageState extends State<HomePage> {
           ///
           Expanded(
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
               width: MediaQuery.of(context).size.width,
               decoration: const BoxDecoration(
                 color: Colors.white,
@@ -241,6 +260,7 @@ class _HomePageState extends State<HomePage> {
               ),
               child: search
                   ? ListView(
+                      padding: EdgeInsets.zero,
                       primary: false,
                       shrinkWrap: true,
                       children: tempSearchStore.map((element) {
@@ -255,6 +275,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  /// BUILD RESULT CARD WIDGET
   Widget buildResultCard(data) {
     return GestureDetector(
       onTap: () async {
@@ -338,8 +359,11 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+
+/// CHAT ROOM LIST TILE
 class ChatRoomListTile extends StatefulWidget {
   final String lastMessage, chatRoomId, myUserName, time;
+  final VoidCallback onTap;
 
   const ChatRoomListTile({
     super.key,
@@ -347,6 +371,7 @@ class ChatRoomListTile extends StatefulWidget {
     required this.chatRoomId,
     required this.myUserName,
     required this.time,
+    required this.onTap,
   });
 
   @override
@@ -387,60 +412,74 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {},
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          profilePic == ''
-              ? const CircularProgressIndicator()
-              : ClipRRect(
-                  borderRadius: BorderRadius.circular(60),
-                  child: Image.network(
-                    profilePic,
-                    height: 60,
-                    width: 60,
-                    fit: BoxFit.cover,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: widget.onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                profilePic == ''
+                    ? const CircularProgressIndicator()
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(60),
+                        child: Image.network(
+                          profilePic,
+                          height: 60,
+                          width: 60,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                const SizedBox(width: 10.0),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            username,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 17.0,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        widget.lastMessage,
+                        maxLines: 1,
+                        style: const TextStyle(
+                          color: Colors.black45,
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.w500,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-          const SizedBox(width: 10.0),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 10.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    username,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 17.0,
-                      fontWeight: FontWeight.w500,
-                    ),
+                const Spacer(),
+                Text(
+                  widget.time,
+                  style: const TextStyle(
+                    color: Colors.black45,
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w500,
                   ),
-                ],
-              ),
-              Text(
-                widget.lastMessage,
-                style: const TextStyle(
-                  color: Colors.black45,
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.w500,
                 ),
-              ),
-            ],
-          ),
-          const Spacer(),
-          Text(
-            widget.time,
-            style: const TextStyle(
-              color: Colors.black45,
-              fontSize: 14.0,
-              fontWeight: FontWeight.w500,
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
