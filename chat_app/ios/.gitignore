@@ -6,6 +6,7 @@
 *.perspectivev3
 **/*sync/
 .sconsign.dblite
+firebase_app_id_file.json
 .tags*
 **/.vagrant/
 **/DerivedData/
